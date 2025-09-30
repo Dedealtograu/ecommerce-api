@@ -5,6 +5,7 @@ import path from "path";
 import fs from "fs";
 import { initializeApp, cert } from "firebase-admin/app";
 import { routes } from "./routes";
+import { errorHandler } from "./middlewares/error-handler.middleware";
 
 const credentials = process.env.GOOGE_APPICATION_CREDENTIALS;
 
@@ -25,6 +26,7 @@ initializeApp({
 const app = express();
 
 routes(app);
+errorHandler(app);
 
 app.listen(3000, () => {
   console.log("Server is running on port 3000");
