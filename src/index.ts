@@ -6,6 +6,7 @@ import fs from "fs";
 import { initializeApp, cert } from "firebase-admin/app";
 import { routes } from "./routes";
 import { errorHandler } from "./middlewares/error-handler.middleware";
+import { pageNotFoundHandler } from "./middlewares/page-not-found.middlerware";
 
 const credentials = process.env.GOOGE_APPICATION_CREDENTIALS;
 
@@ -26,6 +27,7 @@ initializeApp({
 const app = express();
 
 routes(app);
+pageNotFoundHandler(app);
 errorHandler(app);
 
 app.listen(3000, () => {
