@@ -1,5 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { getFirestore } from "firebase-admin/firestore";
+import { ValidationError } from "../errors/validation.error";
+import { NotFoundError } from "../errors/not-found.error";
 
 type User = {
   id: number;
@@ -28,10 +30,15 @@ export class UsersController {
       const userId = req.params.id;
       const doc = await getFirestore().collection('users').doc(userId).get();
       
-      res.send({
+      if (doc.exists) {
+        res.send({
         id: doc.id,
         ...doc.data()
       });
+      } else {
+        throw new NotFoundError("Usuário não encontrado");
+      }
+
     } catch (error) {
       next(error);
     }
@@ -40,8 +47,17 @@ export class UsersController {
   static async save(req: Request, res: Response, next: NextFunction) {
     try {
       const user = req.body;
+
+      if (!user.nome || user.nome.length === 0) {
+        throw new ValidationError("O nome do usuário é obrigatório");
+      }
+
+      if (!user.email || user.email.length === 0) {
+        throw new ValidationError("O email do usuário é obrigatório");
+      }
+
       const userSaved = await getFirestore().collection('users').add(user);
-      res.status(201).send({ message: `Usuário ${userSaved} adicionado com sucesso!` });
+      res.status(201).send({ message: `Usuário ${userSaved.id} adicionado com sucesso!` });
     } catch (error) {
       next(error);
     }
@@ -52,9 +68,18 @@ export class UsersController {
       const userId = req.params.id;
       const updatedUser = req.body as User;
 
-      await getFirestore().collection('users').doc(userId).set(updatedUser, { merge: true });
+      let docRef = getFirestore().collection('users').doc(userId);
+
+      if ((await docRef.get()).exists) {
+        await docRef.set({
+          nome: updatedUser.nome,
+          email: updatedUser.email
+        });
+        res.send({ message: "Usuário atualizado com sucesso!" });
+      } else {
+        throw new NotFoundError("Usuário não encontrado");
+      }
       
-      res.send({ message: "Usuário atualizado com sucesso!" });
     } catch (error) {
       next(error);
     }
