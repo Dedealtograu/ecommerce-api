@@ -2,7 +2,7 @@ import express from "express";
 import { UsersController } from "../controllers/users.controller";
 import asyncHandler from "express-async-handler"; 
 import { celebrate, Segments } from "celebrate";
-import { userSchema } from "../moddels/user.model";
+import { userSchema } from "../models/user.model";
 
 export const userRoutes = express.Router();
 
