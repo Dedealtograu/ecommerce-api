@@ -1,5 +1,4 @@
 import { NextFunction, Request, Response } from "express";
-import { User } from "../models/user.model";
 import { UserService } from "../services/user.service";
 
 export class UsersController {
@@ -19,9 +18,9 @@ export class UsersController {
 
   static async update(req: Request, res: Response, next: NextFunction) {
     const userId = req.params.id;
-    const updatedUser = req.body as User;
+    const user = req.body;
 
-    await new UserService().update(userId, updatedUser);
+    await new UserService().update(userId, user);
     res.send({ message: "Usuário atualizado com sucesso!" });
   }
 
