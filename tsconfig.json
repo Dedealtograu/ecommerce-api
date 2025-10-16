@@ -9,6 +9,7 @@
     "noEmitOnError": true, // Não gera arquivos de saída se houver erros de compilação
     "strictNullChecks": true, // Verifica se as variáveis podem ser nulas
     "noUnusedLocals": true, // Verifica se todas as variáveis foram usadas
+    "typeRoots": ["./node_modules/@types", "./src/types"]
   },
   "compileOnSave": true,
   "include": ["src/**/*"],

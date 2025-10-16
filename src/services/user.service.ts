@@ -1,12 +1,15 @@
 import { NotFoundError } from "../errors/not-found.error";
 import { User } from "../models/user.model";
 import { UserRepository } from "../repositories/user.repository";
+import { AuthService } from "./auth.service";
 
 export class UserService {
   private userRepository: UserRepository;
+  private authService: AuthService;
 
   constructor() {
     this.userRepository = new UserRepository();
+    this.authService = new AuthService();
   }
   async getAll(): Promise<User[]> {
     return this.userRepository.getAll();
@@ -21,7 +24,9 @@ export class UserService {
   }
 
   async save(user: User): Promise<void> {
-    await this.userRepository.save(user);
+    const userAuth = await this.authService.create(user);
+    user.id = userAuth.uid;
+    await this.userRepository.update(user);
   }
 
   async update(id: string, user: User): Promise<void>{
@@ -33,7 +38,8 @@ export class UserService {
     _user.nome = user.nome;
     _user.email = user.email;
 
-    this.userRepository.update(_user);
+    await this.authService.update(id, user);
+    await this.userRepository.update(_user);
   }
 
   async delete(id: string): Promise<void> {
@@ -41,6 +47,7 @@ export class UserService {
     if (!user) {
       throw new NotFoundError("Usuário nao encontrado");
     }
+    await this.authService.delete(id);
     await this.userRepository.delete(id);
   }
 }

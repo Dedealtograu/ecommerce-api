@@ -4,9 +4,11 @@ dotenv.config();
 import path from "path";
 import fs from "fs";
 import { initializeApp, cert } from "firebase-admin/app";
+import { initializeApp as initializeFirebaseApp} from "firebase/app";
 import { routes } from "./routes";
 import { errorHandler } from "./middlewares/error-handler.middleware";
 import { pageNotFoundHandler } from "./middlewares/page-not-found.middlerware";
+import { auth } from "./middlewares/auth.middleware";
 
 const credentials = process.env.GOOGE_APPICATION_CREDENTIALS;
 
@@ -24,8 +26,13 @@ initializeApp({
     privateKey: firebaseConfig.private_key?.replace(/\\n/g, '\n'),
   })
 });
+initializeFirebaseApp({
+  apiKey: process.env.API_KEY
+});
+
 const app = express();
 
+auth(app);
 routes(app);
 pageNotFoundHandler(app);
 errorHandler(app);
