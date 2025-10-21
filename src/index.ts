@@ -5,10 +5,10 @@ import path from "path";
 import fs from "fs";
 import { initializeApp, cert } from "firebase-admin/app";
 import { initializeApp as initializeFirebaseApp} from "firebase/app";
-import { routes } from "./routes";
-import { errorHandler } from "./middlewares/error-handler.middleware";
-import { pageNotFoundHandler } from "./middlewares/page-not-found.middlerware";
-import { auth } from "./middlewares/auth.middleware";
+import { routes } from "./routes/index.js";
+import { errorHandler } from "./middlewares/error-handler.middleware.js";
+import { pageNotFoundHandler } from "./middlewares/page-not-found.middlerware.js";
+import { auth } from "./middlewares/auth.middleware.js";
 
 const credentials = process.env.GOOGE_APPICATION_CREDENTIALS;
 

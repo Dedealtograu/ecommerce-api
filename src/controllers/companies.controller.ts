@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { CompanyService } from "../services/company.service";
+import { CompanyService } from "../services/company.service.js";
 
 export class CompaniesController {
   static async getAll(req: Request, res: Response, next: NextFunction) {
