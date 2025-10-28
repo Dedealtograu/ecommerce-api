@@ -11,11 +11,13 @@ export class UploadFileService {
     const fileBuffer = Buffer.from(base64, 'base64');
     const fileType = await fileTypeFromBuffer(fileBuffer);
 
+    console.log(fileType?.mime);
+
     if (!fileType) {
       throw new ValidationError("Arquivo inválido");
     }
 
-    if (fileType.mime == "image/jpeg" || fileType.mime == "image/png ") {
+    if (fileType.mime !== "image/jpeg" && fileType.mime !== "image/png") {
       throw new ValidationError("A imagem deve estar no formato JPEG ou PNG");
     } 
 

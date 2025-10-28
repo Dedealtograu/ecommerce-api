@@ -1,7 +1,7 @@
 import { NotFoundError } from "../errors/not-found.error.js";
-import { ValidationError } from "../errors/validation.error.js";
 import { Company } from "../models/company.model.js";
 import { CompanyRepository } from "../repositories/company.repository.js";
+import { isStorageUrlValid } from "../utils/validation-utils.js";
 import { UploadFileService } from "./upload-file.service.js";
 
 export class CompanyService {
@@ -36,7 +36,7 @@ export class CompanyService {
       throw new NotFoundError("Empresa' não encontrada");
     }
 
-    if (!this.isValidUrl(company.logomarca)) {
+    if (!isStorageUrlValid(company.logomarca)) {
       _company.logomarca = await this.uploadFileService.upload(company.logomarca);
     }
 
@@ -51,20 +51,5 @@ export class CompanyService {
     _company.ativa = company.ativa;
 
     await this.companyRepository.update(_company);
-  }
-
-  private isValidUrl(urlStr: string): boolean {
-    try {
-      const url = new URL(urlStr);
-      if (url.host !== "firebasestorage.googleapis.com") {
-        throw new ValidationError("URL de origem inválida");
-      }
-      return true;
-    } catch (error) {
-      if (error instanceof ValidationError) {
-        throw error;
-      }
-      return false;
-    }
   }
 }
