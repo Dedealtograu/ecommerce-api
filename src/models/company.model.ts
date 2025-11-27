@@ -1,7 +1,9 @@
 import { Joi } from "celebrate";
+import { phoneRegexPattern } from "../utils/regex-utils.js";
+import { DocumentData, FirestoreDataConverter, QueryDocumentSnapshot } from "firebase-admin/firestore";
 
-export type Company = {
-  id?: string;
+export class Company {
+  id: string;
   logomarca: string;
   cpfCnpj: string;
   razaoSocial: string;
@@ -12,6 +14,20 @@ export type Company = {
   localizacao: string;
   taxaEntrega: number;
   ativa: boolean;
+
+  constructor(data: Company | any) {
+    this.id = data.id;
+    this.logomarca = data.logomarca;
+    this.cpfCnpj = data.cpfCnpj;
+    this.razaoSocial = data.razaoSocial;
+    this.nomeFantasia = data.nomeFantasia;
+    this.telefone = data.telefone;
+    this.horarioFuncionamento = data.horarioFuncionamento;
+    this.endereco = data.endereco;
+    this.localizacao = data.localizacao;
+    this.taxaEntrega = data.taxaEntrega;
+    this.ativa = data.ativa ?? true;
+  }
 };
 
 export const companySchema = Joi.object().keys({
@@ -22,7 +38,7 @@ export const companySchema = Joi.object().keys({
   ).required(),
   razaoSocial: Joi.string().required(),
   nomeFantasia: Joi.string().required(),
-  telefone: Joi.string().regex(/^[0-9]{10,11}$/).required(),
+  telefone: Joi.string().regex(phoneRegexPattern).required(),
   horarioFuncionamento: Joi.string().required(),
   endereco: Joi.string().required(),
   localizacao: Joi.string().required(),
@@ -41,10 +57,33 @@ export const updateCompanySchema = Joi.object().keys({
   ).required(),
   razaoSocial: Joi.string().required(),
   nomeFantasia: Joi.string().required(),
-  telefone: Joi.string().regex(/^[0-9]{10,11}$/).required(),
+  telefone: Joi.string().regex(phoneRegexPattern).required(),
   horarioFuncionamento: Joi.string().required(),
   endereco: Joi.string().required(),
   localizacao: Joi.string().required(),
   taxaEntrega: Joi.number().required(),
   ativa: Joi.boolean().required,
 });
+
+export const companyConverter: FirestoreDataConverter<Company> = {
+  toFirestore: (company: FirebaseFirestore.WithFieldValue<Company>): DocumentData => {
+    return {
+      logomarca: company.logomarca,
+      cpfCnpj: company.cpfCnpj,
+      razaoSocial: company.razaoSocial,
+      nomeFantasia: company.nomeFantasia,
+      telefone: company.telefone,
+      horarioFuncionamento: company.horarioFuncionamento,
+      endereco: company.endereco,
+      localizacao: company.localizacao,
+      taxaEntrega: company.taxaEntrega,
+      ativa: company.ativa
+    };
+  },
+  fromFirestore: (snapshot: QueryDocumentSnapshot): Company => {
+    return new Company({
+      id: snapshot.id,
+      ...snapshot.data()
+    });
+  }
+}
