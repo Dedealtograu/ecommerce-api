@@ -18,4 +18,10 @@ export class AuthController {
 
     res.send();
   }
+
+  static async signin(req: Request, res: Response) {
+    const userRecord = await new AuthService().signin();
+    const token = await userRecord.user.getIdToken(true);
+    res.send({ token });
+  }
 }

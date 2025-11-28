@@ -1,7 +1,7 @@
 import { FirebaseAuthError, getAuth, UpdateRequest, UserRecord } from "firebase-admin/auth";
 import { User } from "../models/user.model.js";
 import { EmailAlreadyExistsError } from "../errors/email-already-exists.error.js";
-import { signInWithEmailAndPassword, getAuth as getFirebaseAuth, UserCredential, sendPasswordResetEmail } from "firebase/auth";
+import { signInWithEmailAndPassword, getAuth as getFirebaseAuth, UserCredential, sendPasswordResetEmail, signInAnonymously } from "firebase/auth";
 import { UnauthorizedError } from "../errors/unauthorized.error.js";
 import { FirebaseError } from "firebase/app";
 
@@ -50,5 +50,9 @@ export class AuthService {
 
   async recovery(email: string) {
     await sendPasswordResetEmail(getFirebaseAuth(), email);
+  }
+
+  async signin(): Promise<UserCredential> {
+    return signInAnonymously(getFirebaseAuth());
   }
 }

@@ -7,3 +7,4 @@ import { authLoginSchema, authRecoverySchema } from "../models/user.model.js";
 export const authRoute = Router();
 authRoute.post("/auth/login", celebrate({ [Segments.BODY]: authLoginSchema }), asyncHandler(AuthController.login));
 authRoute.post("/auth/recovery", celebrate({ [Segments.BODY]: authRecoverySchema }), asyncHandler(AuthController.recovery));
+authRoute.post("/auth/signin", asyncHandler(AuthController.signin));

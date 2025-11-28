@@ -1,4 +1,4 @@
-import { CollectionReference, getFirestore, QuerySnapshot } from "firebase-admin/firestore";
+import { CollectionReference, getFirestore } from "firebase-admin/firestore";
 import { Product, productConverter } from "../models/product.model.js";
 
 export class ProductRepository {

@@ -3,10 +3,11 @@ import { UnauthorizedError } from '../errors/unauthorized.error.js';
 import { DecodedIdToken, getAuth } from 'firebase-admin/auth';
 import { UserService } from '../services/user.service.js';
 import { ForbiddenError } from '../errors/forbidden.error.js';
+import { NotFoundError } from '../errors/not-found.error.js';
 
 export const auth = (app: express.Express) => {
   app.use(async (req: Request, res: Response, next: NextFunction) => {
-    if ((req.url.startsWith('/auth/login') || req.url.startsWith('/auth/recovery')) && req.method === 'POST') {
+    if (isRouteUnAuthenticated(req)) {
       return next();
     }
 
@@ -15,22 +16,33 @@ export const auth = (app: express.Express) => {
     if (token) {
       try {
         const decodedToken: DecodedIdToken = await getAuth().verifyIdToken(token, true);
-        
-        const user = await new UserService().getById(decodedToken.uid);
 
-        if (!user) {
-          return next(new ForbiddenError());
+        if (decodedToken.firebase.sign_in_provider === 'anonymous') {
+          return next();
         }
-
-        req.user = user;
+        
+        req.user = await new UserService().getById(decodedToken.uid);
 
         return next();
 
       } catch (error) {
-        next(new UnauthorizedError());
+        if (error instanceof NotFoundError) {
+          return next(new ForbiddenError());
+        } else {
+          next(new UnauthorizedError());
+        }
       }
     }
 
     next(new UnauthorizedError());
   });
+
+  const isRouteUnAuthenticated = (req: Request): boolean => {
+    if (req.method === "POST") {
+      if (req.url.startsWith("/auth/login") || req.url.startsWith("/auth/recovery") || req.url.startsWith("/auth/signin")) {
+        return true;
+      }
+    }
+    return false;
+  }
 }
