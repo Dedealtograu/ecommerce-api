@@ -1,4 +1,5 @@
 import { Joi } from "celebrate";
+import { cpf, cnpj } from "@dmalbuquerque/cpf-cnpj-validator";
 import { phoneRegexPattern } from "../utils/regex-utils.js";
 import { DocumentData, FirestoreDataConverter, QueryDocumentSnapshot } from "firebase-admin/firestore";
 
@@ -33,8 +34,12 @@ export class Company {
 export const companySchema = Joi.object().keys({
   logomarca: Joi.string().base64().required(),
   cpfCnpj: Joi.alternatives().try(
-    Joi.string().length(11).required(), // CPF
-    Joi.string().length(14).required()  // CNPJ
+    Joi.string().length(11).required().custom((value) => {
+      if (!cpf.isValid(value)) throw new Error('Invalid CPF');
+    }), // CPF
+    Joi.string().length(14).required().custom((value) => {
+      if (!cnpj.isValid(value)) throw new Error('Invalid CNPJ');
+    })  // CNPJ
   ).required(),
   razaoSocial: Joi.string().required(),
   nomeFantasia: Joi.string().required(),
