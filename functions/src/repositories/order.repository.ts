@@ -18,7 +18,7 @@ export class OrderRepository {
     batch.create(orderRef, order);
 
     const itemsRef = orderRef.collection("items").withConverter(orderItemConverter);
-    for (let item of order.itens!) {
+    for (const item of order.itens!) {
       batch.create(itemsRef.doc(), item);
     }
 

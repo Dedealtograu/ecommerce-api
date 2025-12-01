@@ -9,6 +9,7 @@ import { routes } from "./routes/index.js";
 import { errorHandler } from "./middlewares/error-handler.middleware.js";
 import { pageNotFoundHandler } from "./middlewares/page-not-found.middlerware.js";
 import { auth } from "./middlewares/auth.middleware.js";
+import { onRequest } from "firebase-functions/v1/https";
 
 const credentials = process.env.GOOGE_APPICATION_CREDENTIALS;
 
@@ -37,6 +38,4 @@ routes(app);
 pageNotFoundHandler(app);
 errorHandler(app);
 
-app.listen(3000, () => {
-  console.log("Server is running on port 3000");
-});
+export const api = onRequest(app);
