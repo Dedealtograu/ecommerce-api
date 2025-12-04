@@ -15,8 +15,8 @@ export const auth = (app: express.Express) => {
 
     if (token) {
       try {
-        const decodedToken: DecodedIdToken = await getAuth().verifyIdToken(token, true);
-
+        const decodedToken: DecodedIdToken = await getAuth().verifyIdToken(token);
+        
         if (decodedToken.firebase.sign_in_provider === 'anonymous') {
           return next();
         }
@@ -33,7 +33,7 @@ export const auth = (app: express.Express) => {
         }
       }
     }
-
+    
     next(new UnauthorizedError());
   });
 

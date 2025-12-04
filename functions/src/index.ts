@@ -10,6 +10,7 @@ import { errorHandler } from "./middlewares/error-handler.middleware.js";
 import { pageNotFoundHandler } from "./middlewares/page-not-found.middlerware.js";
 import { auth } from "./middlewares/auth.middleware.js";
 import { onRequest } from "firebase-functions/v1/https";
+import { swaggerDocsRoute } from "./routes/swagger-docs.route.js";
 
 const credentials = process.env.GOOGE_APPICATION_CREDENTIALS;
 
@@ -33,6 +34,7 @@ initializeFirebaseApp({
 
 const app = express();
 
+swaggerDocsRoute(app);
 auth(app);
 routes(app);
 pageNotFoundHandler(app);
